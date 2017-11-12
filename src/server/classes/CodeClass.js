@@ -24,7 +24,7 @@ export default class CodeClass {
     config.db('trycode').select('*').where({cid: cid}).then((rows) => {
 
       var page = rows.length ? 'index' : 'error';
-      fs.readFile(config.options.ROOT + '/' + page + '.html', (err, data) => {
+      fs.readFile(config.options.ROOT + '\\' + page + '.html', (err, data) => {
 
         config.room_id = cid;
 

@@ -18,7 +18,6 @@
     "babel-preset-es2015": "^6.18.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.18.0",
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
-    "babel-preset-es2015": "^6.18.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "html-loader": "^0.4.4",
     "css-loader": "^0.26.0",
@@ -30,11 +29,15 @@
     "webpack": "^1.13.3"
   },
   "dependencies": {
+    "basic-auth": "^2.0.0",
+    "depd": "^1.1.1",
     "knex": "^0.12.6",
     "md5": "^2.2.1",
     "mysql": "^2.12.0",
+    "on-finished": "^2.3.0",
     "restify": "^4.3.0",
     "restify-cookies": "^0.2.2",
+    "rotating-file-stream": "^1.3.2",
     "socket.io": "^1.7.1",
     "unirest": "^0.5.1"
   }

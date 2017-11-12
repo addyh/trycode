@@ -10,13 +10,24 @@ io.on('connection', (socket) => {
 
   // Editor
 
+  // The code was changed
   socket.on('server:editor:change', (data) => {
+    // Tell everyone
     socket.broadcast.emit('client:editor:change', data);
   });
 
+  // The syntax was changed
   socket.on('server:editor:mode',(data) => {
+    // Tell everyone
     socket.broadcast.emit('client:editor:mode', data);
+    // Update syntax in database
     Code.setMode(data.cid, data.mode);
+  });
+
+  // Cursor
+  socket.on('server:editor:cursor',(data) => {
+    // Tell everyone
+    socket.broadcast.emit('client:editor:cursor', data);
   });
 
   socket.on('server:editor:viewer',(data) => {
@@ -28,4 +39,4 @@ io.on('connection', (socket) => {
 
 });
 
-console.log('✅  Сокеты запущены!');
+console.log('Sockets are running');

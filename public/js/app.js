@@ -92,13 +92,17 @@
 	    _this.$sce = $sce;
 	    _this.$socket = $socket;
 
+	    var d = new Date();
+	    _this.$scope.my_cursor_id = d.getTime();
+	    _this.$scope.cursors = {};
+
 	    _this.$scope.mode_values = ['text', 'html', 'css', 'javascript', 'php', 'python', 'ruby', 'c_cpp', 'csharp', 'java', 'objectivec', 'actionscript', 'coffee', 'typescript', 'batchfile', 'haml', 'handlebars', 'haskell', 'jade', 'json', 'jsx', 'less', 'sass', 'scss', 'stylus', 'livescript', 'markdown', 'mysql', 'sql', 'pascal', 'perl', 'rust', 'sh', 'svg', 'textile', 'vbscript', 'xml'];
 	    _this.$scope.mode_names = ['Text', 'HTML', 'CSS', 'JavaScript', 'PHP', 'Python', 'Ruby', 'C++', 'C#', 'Java', 'Objective C', 'ActionScript', 'CoffeeScript', 'TypeScript', 'Batchfile', 'Haml', 'Handlebars', 'Haskell', 'Jade', 'JSON', 'JSX', 'LESS', 'SASS', 'SCSS', 'Stylus', 'LiveScript', 'Markdown', 'MySQL', 'SQL', 'Pascal', 'Perl', 'Rust', 'Shell (Bash)', 'SVG', 'Textfile', 'VBScript', 'XML'];
 
 	    _this.$scope.currentCID = location.pathname.replace('/', '');
 	    _this.$scope.currentCode = null;
 	    _this.$scope.currentMode = 'text';
-	    _this.$scope.currentTheme = 'chrome'; //tomorrow_night_eighties
+	    _this.$scope.currentTheme = 'tomorrow_night_eighties'; // chrome
 
 	    _this.$scope.editor = ace.edit('editor');
 	    _this.$scope.editor.setTheme('ace/theme/' + _this.$scope.currentTheme);
@@ -148,7 +152,7 @@
 	    _this.$scope.codeRunned = false;
 	    _this.$scope.autoRun = false;
 
-	    _this.$scope.commands = [{ value: 'Cdnjs: Search', cmd: 'cdnjs:search' }, { value: 'Snippet: for (...) { }', cmd: 'snippet:for' }, { value: 'Random: Int', cmd: 'random:int' }, { value: 'Random: Float', cmd: 'random:float' }, { value: 'Random: Text', cmd: 'random:text' }, { value: 'Random: UUID', cmd: 'random:uuid' }, { value: 'Random: URL', cmd: 'random:url' }, { value: 'Random: E-Mail', cmd: 'random:email' }, { value: 'Random: Fisrt Name', cmd: 'random:firstname' }, { value: 'Random: Last Name', cmd: 'random:lastname' }, { value: 'Random: Full Name', cmd: 'random:fullname' }, { value: 'Random: Hex-Color', cmd: 'random:hex' }, { value: 'Random: IPv4 Adress', cmd: 'random:ip4' }, { value: 'Random: IPv6 Adress', cmd: 'random:ip6' }, { value: 'Random: Lorem Ipsum', cmd: 'random:lorem' }, { value: 'Random: Letters and numbers', cmd: 'random:letnum' }];
+	    _this.$scope.commands = [{ value: 'Cdnjs: Search', cmd: 'cdnjs:search' }, { value: 'Snippet: for (...) { }', cmd: 'snippet:for' }, { value: 'Random: Int', cmd: 'random:int' }, { value: 'Random: Float', cmd: 'random:float' }, { value: 'Random: Text', cmd: 'random:text' }, { value: 'Random: UUID', cmd: 'random:uuid' }, { value: 'Random: URL', cmd: 'random:url' }, { value: 'Random: E-Mail', cmd: 'random:email' }, { value: 'Random: First Name', cmd: 'random:firstname' }, { value: 'Random: Last Name', cmd: 'random:lastname' }, { value: 'Random: Full Name', cmd: 'random:fullname' }, { value: 'Random: Hex-Color', cmd: 'random:hex' }, { value: 'Random: IPv4 Adress', cmd: 'random:ip4' }, { value: 'Random: IPv6 Adress', cmd: 'random:ip6' }, { value: 'Random: Lorem Ipsum', cmd: 'random:lorem' }, { value: 'Random: Letters and numbers', cmd: 'random:letnum' }];
 
 	    _this.$scope.commands_rec = _this.$scope.commands;
 
@@ -156,14 +160,13 @@
 	    _this.$scope.search_cmd = '';
 	    _this.$scope.cdnjs_files = [];
 
-	    // Получаем исходный код
+	    // Get the source code
 	    _this.$http.get('/get' + location.pathname).success(function (data) {
 	      // Пихаем ответ от сервера в переменную
 	      _this.setCode(data.data);
 	    });
 
-	    // При изменении показа/скрытия просмотра кода,
-	    // отправлять запрос на сохранение
+	    // If you change the display / hide code view, send a request for saving
 	    _this.$scope.$watch('codeRunned', function (newValue, oldValue) {
 	      if (newValue == oldValue) {
 	        return false;
@@ -178,8 +181,7 @@
 	      });
 	    });
 
-	    // При изменении автозапуска кода,
-	    // отправлять запрос на сохранение
+	    // If you change the autorun code, send a request for saving
 	    _this.$scope.$watch('autoRun', function (newValue, oldValue) {
 	      if (newValue == oldValue) {
 	        return false;
@@ -194,53 +196,100 @@
 	      });
 	    });
 
-	    // Следим за изменением синтаксиса редактора
+	    // We follow the change in the syntax of the editor
 	    _this.$scope.$watch('currentMode', function (newValue, oldValue) {
 	      if (newValue == oldValue) {
 	        return false;
 	      }
-	      // Передаем серверу, что мы изменили синтаксис
+	      // We tell the server that we changed the syntax
 	      _this.$socket.emit('server:editor:mode', {
 	        cid: _this.$scope.currentCID,
 	        mode: newValue
 	      });
 
-	      // Сохраняем новое значение синтаксиса
+	      // Save the new syntax value
 	      _this.$scope.currentMode = newValue;
 
-	      // Устанавливаем новый синтаксис для редактора
+	      // Install a new syntax for the editor
 	      _this.$scope.editor.getSession().setMode('ace/mode/' + _this.$scope.currentMode);
 
-	      // Сохраняем изменения
+	      // Save changes
 	      // setTimeout( () => { _this.saveCode() },500);
 	    });
 
-	    // Следим за изменением синтаксиса от других пользователей
+	    // We follow the syntax change from other users
 	    _this.$socket.on('client:editor:mode', function (data) {
-	      // Пихаем ответ от сервера в переменную
+	      // Ping the response from the server to the variable
 	      if (data.cid == _this.$scope.currentCID) {
 	        _this.$scope.currentMode = data.mode;
 	      }
 	    });
 
+	    // Other users sent cursor socket
+	    _this.$socket.on('client:editor:cursor', function (data) {
+	      // Make sure we are on the same page ID as other user
+	      if (data.cid == _this.$scope.currentCID) {
+
+	        // Cursor exists
+	        if (_this.$scope.cursors[data.cursor_id]) {
+
+	          // Cursor position changed
+	          if (_this.$scope.cursors[data.cursor_id].pos.x != data.cursor.x || _this.$scope.cursors[data.cursor_id].pos.y != data.cursor.y) {
+
+	            // Remove their old cursor
+	            if (_this.$scope.cursors[data.cursor_id].marker) {
+	              _this.$scope.editor.session.removeMarker(_this.$scope.cursors[data.cursor_id].marker);
+	            }
+	          }
+	          // Cursor position still same
+	          else {
+	              return;
+	            }
+	        }
+	        // Cursor did not exist
+	        else {
+	            _this.$scope.cursors[data.cursor_id] = {};
+	          }
+
+	        // Re-draw their cursor
+	        if (data.cursor.x != -1) {
+	          var marker_id = _this.drawOtherCursor(data.cursor.x, data.cursor.y);
+	          _this.$scope.cursors[data.cursor_id].marker = marker_id;
+	          _this.$scope.cursors[data.cursor_id].pos = data.cursor;
+	        }
+	      }
+	    });
+
+	    // // We moved cursor
+	    // _this.$scope.editor.on('changeCursor', function(e) {
+	    //   var pos = _this.$scope.editor.getCursorPosition();
+	    //   _this.$socket.emit('server:editor:cursor', {
+	    //     cid: _this.$scope.currentCID,
+	    //     cursor: {x: pos.row, y:pos.column},
+	    //     cursor_id: _this.$scope.my_cursor_id
+	    //   });
+	    // });
+
+	    // We focused in the editor
 	    _this.$scope.editor.on('focus', function (e) {
 	      var pos = _this.$scope.editor.getCursorPosition();
 	      _this.$scope.cursorPos = 'Line ' + pos.row + ', Column ' + pos.column;
 	      _this.$scope.$apply();
 	    });
 
+	    // We typed in the editor
 	    _this.$scope.editor.on('change', function (e) {
 
-	      // Если изменения с нашей стороны
+	      // If the changes on our part
 	      if (_this.$scope.editor.curOp && _this.$scope.editor.curOp.command.name) {
 
-	        // Очищаем таймер сохранения
+	        // Clearing the save timer
 	        clearTimeout(_this.$scope.debounceEditor);
 
-	        // Получаем объект сессии редактора
+	        // Get the object of the editor's session
 	        var session = _this.$scope.editor.session;
 
-	        // Оповещаем об изменениях
+	        // Notify about changes
 	        _this.$socket.emit('server:editor:change', {
 	          cid: _this.$scope.currentCID,
 	          mode: _this.$scope.currentMode,
@@ -253,37 +302,58 @@
 	          _this2.writeCode();
 	        }
 
-	        // Устанавливаем таймер на сохранения кода
+	        // Set the timer to save the code
 	        _this.$scope.debounceEditor = setTimeout(function () {
 	          _this.saveCode();
 	        }, _this.$scope.saveDelay);
 	      }
 	    });
 
-	    // Следим за изменениями в коде
+	    // Watch for changes in the code
 	    _this.$socket.on('client:editor:change', function (data) {
-	      // Вносим изменения в коде
+	      // Making changes in the code
 	      if (_this.$scope.currentCID == data.cid) {
 	        _this.setCode(data);
-	        console.log(data);
+	        // console.log(data);
 	      }
 	    });
 
 	    window.onresize = resizeEditor;
 
+	    // Send closing signal by saying cursor position is -1
+	    $(window).on('beforeunload', function () {
+	      // Do not emit our cursor position anymore after this
+	      clearInterval(_this.$scope.cursor_interval);
+	      _this.$socket.emit('server:editor:cursor', {
+	        cid: _this.$scope.currentCID,
+	        cursor: { x: -1, y: -1 },
+	        cursor_id: _this.$scope.my_cursor_id
+	      });
+	    });
+
 	    $d.onready(function () {
 
-	      // После загрузки страницы, скрываем блок "Loading"
+	      // After loading the page, hide the "Loading"
 	      $d.get('.shadow-block')[0].style.display = 'none';
 
 	      resizeEditor();
 
-	      // Следим за позицией курсора
-	      // setInterval( () => {
-	      // var pos = _this.$scope.editor.getCursorPosition();
-	      // _this.$scope.cursorPos = 'Line ' + pos.row + ', Column ' + pos.column;
-	      // _this.$scope.$apply();
-	      // }, 100);
+	      // Watch the position of the cursor
+	      setInterval(function () {
+	        var pos = _this.$scope.editor.getCursorPosition();
+	        _this.$scope.cursorPos = 'Line ' + (pos.row + 1) + ', Column ' + pos.column;
+	        _this.$scope.$apply();
+	      }, 200);
+
+	      // Send cursor update
+	      _this.$scope.cursor_interval = setInterval(function () {
+	        var pos = _this.$scope.editor.getCursorPosition();
+	        _this.$socket.emit('server:editor:cursor', {
+	          cid: _this.$scope.currentCID,
+	          cursor: { x: pos.row, y: pos.column },
+	          cursor_id: _this.$scope.my_cursor_id
+	        });
+	      }, 200);
 	    });
 
 	    function resizeEditor() {
@@ -292,24 +362,69 @@
 	          e = d.documentElement,
 	          g = d.getElementsByTagName('body')[0],
 
-	      // Получаем полную ширину области видимости
+	      // Get the full width of the scope
 	      x = w.innerWidth || e.clientWidth || g.clientWidth,
 
-	      // Получаем полную высоту области видимости
+	      // Get the full height of the scope
 	      y = w.innerHeight || e.clientHeight || g.clientHeight,
 
-	      // Вычисляем высоту редактора
+	      // Calculate the height of the editor
 	      editor_height = y - ($d.get('.header')[0].clientHeight + $d.get('.statusbar')[0].clientHeight);
 
-	      // Устанавливаем высоту редактора
+	      // Set the height of the editor
 	      $d.style($d.get('.editor__code')[0], { 'height': editor_height + 'px' });
 
-	      // Устанавливаем высоту просмотра примера
+	      // Set the viewing height of the example
 	      $d.style($d.get('#viewer')[0], { 'height': editor_height + 'px' });
 	    }
 	  }
 
 	  _createClass(AppController, [{
+	    key: 'drawOtherCursor',
+	    value: function drawOtherCursor(x, y) {
+	      var _this = this;
+	      var marker = {};
+	      marker.cursors = [{ row: x, column: y }];
+	      marker.update = function (html, markerLayer, session, config) {
+	        var start = config.firstRow,
+	            end = config.lastRow;
+	        var cursors = this.cursors;
+	        for (var i = 0; i < cursors.length; i++) {
+	          var pos = this.cursors[i];
+	          if (pos.row < start) {
+	            continue;
+	          } else if (pos.row > end) {
+	            break;
+	          } else {
+	            // Compute cursor position on screen
+	            // This code is based on ace/layer/marker.js
+	            var screenPos = session.documentToScreenPosition(pos);
+
+	            var height = config.lineHeight;
+	            var width = config.characterWidth;
+	            var top = markerLayer.$getTop(screenPos.row, config);
+	            var left = markerLayer.$padding + screenPos.column * width;
+	            // Can add any html here
+	            html.push("<div class='MyCursorClass' style='", 'height: ', height, 'px; ', 'top: ', top, 'px; ', 'left: ', left, 'px; ', 'width: ', width, "px;'></div>");
+	          }
+	        }
+	      };
+	      marker.redraw = function () {
+	        this.session._signal('changeFrontMarker');
+	      };
+	      marker.addCursor = function () {
+	        // Add to this cursors
+
+	        // Trigger redraw
+	        marker.redraw();
+	      };
+	      marker.session = _this.$scope.editor.session;
+	      marker.session.addDynamicMarker(marker, true);
+	      // Call marker.session.removeMarker(marker.id) to remove it
+	      // Call marker.redraw after changing one of cursors
+	      return marker.id;
+	    }
+	  }, {
 	    key: 'runCommand',
 	    value: function runCommand(command) {
 	      var _this = this;
@@ -505,7 +620,7 @@
 	      });
 	    }
 
-	    // Контроль изменения просмотра примера
+	    // Controlling the modification of the example view
 
 	  }, {
 	    key: 'viewerShow',
@@ -514,7 +629,7 @@
 	      _this.$scope.codeRunned = bool;
 	    }
 
-	    // Вносит код в iframe
+	    // Brings the code to the iframe
 
 	  }, {
 	    key: 'writeCode',
@@ -527,7 +642,7 @@
 	      iframe.document.close();
 	    }
 
-	    // Просмотра результата HTML
+	    // Viewing the result of HTML
 
 	  }, {
 	    key: 'runCode',
@@ -536,7 +651,7 @@
 	      this.writeCode();
 	    }
 
-	    // Скрыть результата HTML
+	    // Hide HTML result
 
 	  }, {
 	    key: 'closeCode',
@@ -544,7 +659,7 @@
 	      this.viewerShow(false);
 	    }
 
-	    // Сохранение кода
+	    // Saving code
 
 	  }, {
 	    key: 'saveCode',
@@ -559,17 +674,17 @@
 
 	      _this.$scope.isSaving = true;
 
-	      // На момент сохранения, запрещаем редактирование.
+	      // At the time of saving, we forbid editing.
 	      $d.addClass($d.get('.ace_scroller')[0], 'disabled');
 
-	      // Отправляем изменения на сервер
+	      // Sending changes to the server
 	      _this.$http.post('save' + location.pathname, arr).success(function (data) {
 	        _this.$scope.isSaving = false;
 	        _this.disableEditor(false);
 	      });
 	    }
 
-	    // Запрет на редактирование
+	    // Prohibition of editing
 
 	  }, {
 	    key: 'disableEditor',

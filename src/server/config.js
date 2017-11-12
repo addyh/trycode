@@ -23,8 +23,8 @@ const colors = [
 
 const options = {
   DEV: true,
-  PORT: process.env.PORT || 80,
-  ROOT: __dirname.replace(/(\/dist|\/dist\/modules)/g,'/public')
+  PORT: 81,
+  ROOT: __dirname.replace(/(\\dist|\\dist\\modules)/g, '\\public')
 };
 
 var db = null;
@@ -32,11 +32,11 @@ var db = null;
 db = require('knex')({
   client: 'mysql',
   connection: {
-    host       : options.DEV ? 'localhost' : 'eu-cdbr-west-01.cleardb.com',
-    user       : options.DEV ? 'root' : 'db_user',
-    password   : options.DEV ? 'password' : 'db_pass',
-    database   : options.DEV ? 'trycode_db' : 'db_dbname',
-    socketPath : options.DEV ? '/Applications/MAMP/tmp/mysql/mysql.sock' : '', // I have OSX and need mysql.sock
+    host       : options.DEV ? 'localhost' : 'localhost',
+    user       : options.DEV ? 'trycode' : 'trycode',
+    password   : options.DEV ? '' : '',
+    database   : options.DEV ? 'trycode_db' : 'trycode_db',
+    // socketPath : options.DEV ? 'C:/XAMPP/mysql/mysql.sock' : '', // I have OSX and need mysql.sock
     charset    : 'utf8',
   }
 });

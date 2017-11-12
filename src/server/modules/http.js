@@ -1,3 +1,9 @@
+// these are for the logger
+var fs = require('fs');
+var path = require('path');
+var rfs = require('rotating-file-stream');
+var morgan = require('../morgan');
+
 import CookieParser from 'restify-cookies';
 import Restify from 'restify';
 import unirest from 'unirest';
@@ -6,7 +12,22 @@ import config from '../config';
 
 import CodeClass from '../classes/CodeClass';
 
+// create the server
 const app = Restify.createServer();
+
+// ensure log directory exists
+var logDirectory = path.join(__dirname, '../../', 'access-logs');
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+
+// create a rotating write stream
+var accessLogStream = rfs('access.log', {
+  interval: '1d', // rotate daily
+  path: logDirectory
+});
+
+// Setup the logger
+app.use(morgan('csv', {stream: accessLogStream}));
+app.use(morgan(':remote-addr [:date[custom]] :method :url'));
 
 app.use(Restify.bodyParser());
 app.use(CookieParser.parse);
@@ -14,7 +35,7 @@ app.use(CookieParser.parse);
 const Code = new CodeClass();
 
 app.get(/\/public\/?.*/, Restify.serveStatic({
-  directory: __dirname.replace('dist/modules','')
+  directory: __dirname.replace('dist\\modules','')
 }));
 
 app.get('/', function indexHTML(req, res, next) {
@@ -55,6 +76,6 @@ app.post('save/:cid', function(req, res, next) {
 
 app.listen(config.options.PORT);
 
-console.log('✅  Сервер запущен по адресу: http://localhost:5000');
+console.log('Server started at http://localhost:' + config.options.PORT);
 
 export default { app };

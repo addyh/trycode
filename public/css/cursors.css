@@ -1,0 +1,20 @@
+/* Cursor Animation */
+.MyCursorClass {
+  animation: cursorMove 1s infinite;
+  border-left: 3px solid gold;
+  position: absolute;
+  opacity: 1;
+}
+@-webkit-keyframes cursorMove {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+@-moz-keyframes cursorMove {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+@keyframes cursorMove {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+/* End Cursor Animation */
