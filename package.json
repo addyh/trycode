@@ -4,7 +4,7 @@
   "description": "Open-source realtime collaborative code editor on Babel, NodeJS, AngularJS, Socket.io, ACE",
   "scripts": {
     "start": "node ./dist/run.js",
-    "build": "babel ./src/server -d ./dist",
+    "build": "babel ./src/server -d ./dist && webpack",
     "run": "node ./dist/run.js",
     "build-run": "babel ./src/server -d ./dist && node ./dist/run.js",
     "sprite": "svg-sprite-generate -d public/img/svg -o public/img/sprites.svg"

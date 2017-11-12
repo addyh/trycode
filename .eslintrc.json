@@ -1,0 +1,45 @@
+{
+    "root": true,
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true,
+            "jsx": true
+        },
+        "sourceType": "module"
+    },
+    "extends": [
+        "eslint:recommended"
+    ],
+    "rules": {
+        "no-unused-vars": 0,
+        "no-undef": 0,
+        "no-empty": 0,
+        "no-unsafe-negation": 0,
+        "no-unexpected-multiline": 0,
+        "no-sparse-arrays": 1,
+        "no-regex-spaces": 0,
+        "no-debugger": 0,
+        "no-console": 0,
+        "no-constant-condition": 0,
+        "no-control-regex": 1,
+        "no-irregular-whitespace": [2, {"skipStrings": false}],
+        "no-tabs": 2,
+        "getter-return": 2,
+        "indent": [2, 2],
+        "curly": [2, "all"],
+        "quotes": [2, "single", {"avoidEscape": true}],
+        "semi": [2, "always", { "omitLastInOneLineBlock": true}],
+        "comma-style": [2, "last"],
+        "space-in-parens": [2, "never"],
+        "space-before-blocks": [2, "always"],
+        "space-before-function-paren": [2, "never"],
+        "arrow-spacing": [2, {"before": true, "after": true }],
+        "keyword-spacing": [2, {"before": true, "after": true }],
+        "linebreak-style": [2, "windows"]
+    }
+}

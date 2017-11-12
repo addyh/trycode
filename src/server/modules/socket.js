@@ -8,23 +8,23 @@ const io = socket.listen(http.app.server);
 
 io.on('connection', (socket) => {
 
-	// Editor
+  // Editor
 
-	socket.on('server:editor:change', (data) => {
-		socket.broadcast.emit('client:editor:change', data);
-	});
+  socket.on('server:editor:change', (data) => {
+    socket.broadcast.emit('client:editor:change', data);
+  });
 
-	socket.on('server:editor:mode',(data) => {
-		socket.broadcast.emit('client:editor:mode', data);
-		Code.setMode(data.cid, data.mode);
-	});
+  socket.on('server:editor:mode',(data) => {
+    socket.broadcast.emit('client:editor:mode', data);
+    Code.setMode(data.cid, data.mode);
+  });
 
-	socket.on('server:editor:viewer',(data) => {
-		Code.viewer(data.type, data.cid, data.status);
-	});
+  socket.on('server:editor:viewer',(data) => {
+    Code.viewer(data.type, data.cid, data.status);
+  });
 
-	socket.on('disconnect',() => {
-	});
+  socket.on('disconnect',() => {
+  });
 
 });
 
